@@ -236,7 +236,7 @@ void init() {
 }
 
 void play() {
-    bool quit = 0, key_pressed = 0;
+    bool quit = 0, key_pressed = 0, okaux;
 	int i, j;
 
 	get_random(i, j);
@@ -245,6 +245,7 @@ void play() {
     SDL_Event e;
 
 	while (!quit) {
+        render();
         if (!valid() && board_full()) {
             SDL_SetWindowTitle(window, "Game Over! Press 'r' to restart.");
             while (SDL_PollEvent(&e)) {
@@ -272,8 +273,6 @@ void play() {
 
             get_random(i, j);
             V[i][j] = 1;
-
-            render();
 
             key_pressed = 0;
 
@@ -310,22 +309,30 @@ void play() {
                             }
                             break;
                         case SDLK_DOWN:
+                            okaux = 0;
                             for (int h = 0; h < 4; h++) {
-                                int temp[4] = { 0 }, l = 0;
-                                for (int k = 3; k >= 0; k--)
-                                    if (V[k][h] != 0)
-                                        temp[l++] = V[k][h];
-                                for (int k = 0; k < 3; k++)
-                                    if (temp[k] == temp[k + 1] && temp[k] != 0) {
-                                        temp[k] *= 2;
-                                        temp[k + 1] = 0;
-                                    }
-                                l = 0;
-                                for (int k = 3; k >= 0; k--)
-                                    if (temp[k] != 0)
-                                        V[3 - (l++)][h] = temp[k];
-                                while (l < 4)
-                                    V[3 - (l++)][h] = 0;
+                                for (int k = 0; k < 4; k++) {
+                                    if (h < 4 - 1 && V[h][k] == V[h + 1][k]) okaux = 1;
+                                }
+                            }
+                            if (okaux) {
+                                for (int h = 0; h < 4; h++) {
+                                    int temp[4] = { 0 }, l = 0;
+                                    for (int k = 3; k >= 0; k--)
+                                        if (V[k][h] != 0)
+                                            temp[l++] = V[k][h];
+                                    for (int k = 0; k < 3; k++)
+                                        if (temp[k] == temp[k + 1] && temp[k] != 0) {
+                                            temp[k] *= 2;
+                                            temp[k + 1] = 0;
+                                        }
+                                    l = 0;
+                                    for (int k = 3; k >= 0; k--)
+                                        if (temp[k] != 0)
+                                            V[3 - (l++)][h] = temp[k];
+                                    while (l < 4)
+                                        V[3 - (l++)][h] = 0;
+                                }
                             }
                             break;
                         case SDLK_LEFT:
@@ -348,22 +355,30 @@ void play() {
                             }
                             break;
                         case SDLK_RIGHT:
+                            okaux = 0;
                             for (int h = 0; h < 4; h++) {
-                                int temp[4] = { 0 }, l = 0;
-                                for (int k = 3; k >= 0; k--)
-                                    if (V[h][k] != 0)
-                                        temp[l++] = V[h][k];
-                                for (int k = 0; k < 3; k++)
-                                    if (temp[k] == temp[k + 1] && temp[k] != 0) {
-                                        temp[k] *= 2;
-                                        temp[k + 1] = 0;
-                                    }
-                                l = 0;
-                                for (int k = 3; k >= 0; k--)
-                                    if (temp[k] != 0)
-                                        V[h][3 - (l++)] = temp[k];
-                                while (l < 4)
-                                    V[h][3 - (l++)] = 0;
+                                for (int k = 0; k < 4; k++) {
+                                    if (k < 4 - 1 && V[h][k] == V[h][k+1]) okaux = 1;
+                                }
+                            }
+                            if(okaux){
+                                for (int h = 0; h < 4; h++) {
+                                    int temp[4] = { 0 }, l = 0;
+                                    for (int k = 3; k >= 0; k--)
+                                        if (V[h][k] != 0)
+                                            temp[l++] = V[h][k];
+                                    for (int k = 0; k < 3; k++)
+                                        if (temp[k] == temp[k + 1] && temp[k] != 0) {
+                                            temp[k] *= 2;
+                                            temp[k + 1] = 0;
+                                        }
+                                    l = 0;
+                                    for (int k = 3; k >= 0; k--)
+                                        if (temp[k] != 0)
+                                            V[h][3 - (l++)] = temp[k];
+                                    while (l < 4)
+                                        V[h][3 - (l++)] = 0;
+                                }
                             }
                             break;
                         case SDLK_r:
@@ -374,7 +389,9 @@ void play() {
                             V[i][j] = 1;
                         }
                     }
+                    SDL_Delay(50);
                 }
+                SDL_Delay(50);
             }
         }
     }
@@ -497,5 +514,5 @@ void render() {
 
     SDL_RenderPresent(renderer);
 
-    SDL_Delay(33);
+    SDL_Delay(50);
 }
